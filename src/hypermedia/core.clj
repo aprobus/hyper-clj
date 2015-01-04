@@ -5,12 +5,14 @@
 
 (def ^:private link-key? (partial keyword-starts-with? "link-"))
 (def ^:private embedded-key? (partial keyword-starts-with? "embedded-"))
+(def ^:private meta-key? (partial keyword-starts-with? "meta-"))
 
 (defn- extract-keyword [re key]
   (keyword (get (re-matches re (name key)) 1)))
 
 (def ^:private extract-embed-keyword (partial extract-keyword #"^embedded-(.*)"))
 (def ^:private extract-link-keyword (partial extract-keyword #"^link-(.*)"))
+(def ^:private extract-meta-keyword (partial extract-keyword #"^meta-(.*)"))
 
 (defn- get-full-link-spec [link-spec]
   (if (map? link-spec)
@@ -30,13 +32,16 @@
 
 (def ^:private gen-embedded (partial extract-config embedded-key? identity extract-embed-keyword))
 (def ^:private gen-links (partial extract-config link-key? get-full-link-spec extract-link-keyword))
+(def ^:private gen-meta (partial extract-config meta-key? identity extract-meta-keyword))
 
 (defmacro defhyper [fn-name args & config]
   (let [config-map (apply hash-map config)
         item-sym (:item config-map)
         links (gen-links config-map)
-        embedded (gen-embedded config-map)]
+        embedded (gen-embedded config-map)
+        item-meta (gen-meta config-map)]
     `(defn ~fn-name [~@args]
        (merge ~item-sym
               {:_embedded ~embedded
-               :_links ~links}))))
+               :_links ~links
+               :_meta ~item-meta}))))
