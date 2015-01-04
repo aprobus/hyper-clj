@@ -3,42 +3,33 @@
 (defn- keyword-starts-with? [s key]
   (.startsWith (name key) s))
 
-(def link-key? (partial keyword-starts-with? "link-"))
-(def embedded-key? (partial keyword-starts-with? "embedded-"))
+(def ^:private link-key? (partial keyword-starts-with? "link-"))
+(def ^:private embedded-key? (partial keyword-starts-with? "embedded-"))
 
 (defn- extract-keyword [re key]
   (keyword (get (re-matches re (name key)) 1)))
 
-(def extract-embed-keyword (partial extract-keyword #"^embedded-(.*)"))
-(def extract-link-keyword (partial extract-keyword #"^link-(.*)"))
+(def ^:private extract-embed-keyword (partial extract-keyword #"^embedded-(.*)"))
+(def ^:private extract-link-keyword (partial extract-keyword #"^link-(.*)"))
 
 (defn- get-full-link-spec [link-spec]
   (if (map? link-spec)
     link-spec
     {:href link-spec}))
 
-(defn- gen-embedded [config-map]
-  (loop [embedded-keys (filter embedded-key? (keys config-map))
+(defn- extract-config [key-filter-fn map-value-fn keyword-fn config-map]
+  (loop [config-keys (filter key-filter-fn (keys config-map))
          acc {}]
-    (if (empty? embedded-keys)
+    (if (empty? config-keys)
       acc
-      (let [embed-key (first embedded-keys)]
-        (recur (rest embedded-keys)
-               (assoc acc
-                      (extract-embed-keyword embed-key)
-                      (get config-map embed-key)))))))
+      (let [config-key (first config-keys)
+            config-val (map-value-fn (get config-map config-key))
+            acc-key (keyword-fn config-key)]
+        (recur (rest config-keys) 
+               (assoc acc acc-key config-val))))))
 
-(defn- gen-links [config-map]
-  (loop [link-keys (filter link-key? (keys config-map))
-         acc {}]
-    (if (empty? link-keys)
-      acc
-      (let [link-key (first link-keys)
-            link-spec (get-full-link-spec (get config-map link-key))]
-        (recur (rest link-keys)
-               (assoc acc
-                      (extract-link-keyword link-key)
-                      link-spec))))))
+(def ^:private gen-embedded (partial extract-config embedded-key? identity extract-embed-keyword))
+(def ^:private gen-links (partial extract-config link-key? get-full-link-spec extract-link-keyword))
 
 (defmacro defhyper [fn-name args & config]
   (let [config-map (apply hash-map config)
