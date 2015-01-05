@@ -34,14 +34,23 @@
 (def ^:private gen-links (partial extract-config link-key? get-full-link-spec extract-link-keyword))
 (def ^:private gen-meta (partial extract-config meta-key? identity extract-meta-keyword))
 
+(defn remove-empty-maps [mapo]
+  (loop [remaining-keys (keys mapo)
+         acc mapo]
+    (if (empty? remaining-keys)
+      acc
+      (let [next-key (first remaining-keys)
+            next-val (get mapo next-key)]
+        (if (empty? next-val)
+          (recur (rest remaining-keys) (dissoc acc next-key))
+          (recur (rest remaining-keys) acc))))))
+
 (defmacro defhyper [fn-name args & config]
   (let [config-map (apply hash-map config)
         item-sym (:item config-map)
-        links (gen-links config-map)
-        embedded (gen-embedded config-map)
-        item-meta (gen-meta config-map)]
+        item-extras (remove-empty-maps {:_embedded (gen-embedded config-map)
+                                        :_links (gen-links config-map)
+                                        :_meta (gen-meta config-map)})]
     `(defn ~fn-name [~@args]
        (merge ~item-sym
-              {:_embedded ~embedded
-               :_links ~links
-               :_meta ~item-meta}))))
+              ~item-extras))))

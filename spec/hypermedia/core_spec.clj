@@ -31,7 +31,7 @@
 (describe "defhypermedia-singular"
   (context "with plain-representer"
     (it "represents the map"
-      (should= {:a 1 :_embedded {} :_links {} :_meta {}}
+      (should= {:a 1}
                (plain-representer {:a 1}))))
 
   (context "with links-representer"
