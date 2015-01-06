@@ -1,6 +1,6 @@
-(ns hypermedia.core-spec
+(ns hyper-clj.core-spec
   (:require [speclj.core :refer :all]
-            [hypermedia.core :refer :all]))
+            [hyper-clj.core :refer :all]))
 
 (defhyper plain-representer [item]
   :item item)

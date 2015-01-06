@@ -1,4 +1,4 @@
-(ns hypermedia.core)
+(ns hyper-clj.core)
 
 (defn- keyword-starts-with? [s key]
   (.startsWith (name key) s))
