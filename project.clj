@@ -1,4 +1,4 @@
-(defproject hyper-clj "0.1.0"
+(defproject hyper-clj "0.1.1"
   :description "Clojure library for representing hypermedia"
   :url "https://github.com/aprobus/hyper-clj"
   :license {:name "Eclipse Public License"
