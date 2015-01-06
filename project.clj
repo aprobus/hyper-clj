@@ -1,5 +1,5 @@
-(defproject hypermedia "0.1.0-SNAPSHOT"
-  :description "FIXME: write description"
+(defproject hyper-clj "0.1.0-SNAPSHOT"
+  :description "Clojure library for representing hypermedia"
   :url "https://github.com/aprobus/hyper-clj"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
