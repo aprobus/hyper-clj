@@ -2,11 +2,22 @@
 
 A Clojure library for representing hypermedia.
 
-## Usage
+## Lein
 
-Create a representer like this
+To use in Leiningen, add as a dependency:
 
 ```clojure
+[hyper-clj "0.1.1"]
+```
+
+## Usage
+
+Create a representer like this:
+
+```clojure
+(ns books.core
+  (:require [hyper-clj.core :refer :all]))
+
 (defhyper represent-book [book author]
   :item book
   :link-self (str "/books" (:id book))
@@ -14,14 +25,14 @@ Create a representer like this
   :meta-info "Meta info")
 ```
 
-and then call it with 
+and then call it with:
 
 ```clojure
 (represent-book {:title "For Whom The Bell Tolls" :id 10} 
                 {:name "Ernest Hemingway"})
 ```
 
-which results in
+which results in:
 
 ```clojure
 {:title "For Whom The Bell Tolls"
