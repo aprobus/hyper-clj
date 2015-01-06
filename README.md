@@ -1,10 +1,36 @@
-# hypermedia
+# Hyper-Clj
 
-A Clojure library designed to ... well, that part is up to you.
+A Clojure library for representing hypermedia.
 
 ## Usage
 
-FIXME
+Create a representer like this
+
+```clojure
+(defhyper represent-book [book author]
+  :item book
+  :link-self (str "/books" (:id book))
+  :embedded-author author
+  :meta-info "Meta info")
+```
+
+and then call it with 
+
+```clojure
+(represent-book {:title "For Whom The Bell Tolls" :id 10} 
+                {:name "Ernest Hemingway"})
+```
+
+which results in
+
+```clojure
+{:title "For Whom The Bell Tolls"
+ :_links {:self {:href "/books/10"}}
+ :_embedded {:author {:name "Ernest Hemingway"}}
+ :_meta {:info "Meta info"}}
+```
+
+Any meta/link/embedded is supported. Simply prepend the config with the appropriate word.
 
 ## License
 
